@@ -1,9 +1,12 @@
 import {
+  Link,
   Links,
   Meta,
   Outlet,
   Scripts,
   ScrollRestoration,
+  useRouteError,
+  isRouteErrorResponse,
 } from "@remix-run/react";
 import type { LinksFunction } from "@remix-run/node";
 
@@ -34,6 +37,64 @@ export function Layout({ children }: { children: React.ReactNode }) {
     </html>
   );
 }
+
+export function ErrorBoundary() {
+  const error = useRouteError();
+  if (isRouteErrorResponse(error)) {
+    return (
+      <html>
+        <head>
+          <title>Oh no!</title>
+          <Meta />
+          <Links />
+        </head>
+        <body>
+        <main className="error">
+          <h1>Error: {error?.data}</h1>
+          <p>Oh no! Something went wrong!</p>
+          <p>Back to <Link to="/">safety</Link></p>
+        </main>
+        <Scripts />
+        </body>
+      </html>
+    );
+  } else if (error instanceof Error) {
+    return (
+      <html>
+      <head>
+        <title>Oh no!</title>
+        <Meta />
+        <Links />
+      </head>
+      <body>
+      <main className="error">
+        <h1>Error: {error?.message}</h1>
+        <p>Oh no! Something went wrong!</p>
+        <p>Back to <Link to="/">safety</Link></p>
+      </main>
+      <Scripts />
+      </body>
+    </html>
+    );
+  } else {
+    <html>
+        <head>
+          <title>Oh no!</title>
+          <Meta />
+          <Links />
+        </head>
+        <body>
+        <main className="error">
+          <h1>Unknown Error</h1>
+          <p>Oh no! Something went wrong!</p>
+          <p>Back to <Link to="/">safety</Link></p>
+        </main>
+        <Scripts />
+        </body>
+      </html>
+  }
+}
+
 
 export default function App() {
   return <Outlet />;
