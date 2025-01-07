@@ -7,6 +7,7 @@ import { getStoredNotes, storeNotes } from "~/data/notesStoreData"
 
 export default function NotesPage() {
     const notes = useLoaderData<typeof loader>();
+
     return (
         <main>
             <NewNote />
@@ -27,7 +28,9 @@ export const action = async ({
   }: ActionFunctionArgs) => {
     const formData = await request.formData();
     const noteData = Object.fromEntries(formData);
-
+    if (noteData.title.trim().length < 5) {
+      return { message: "Invalid title - must be at least 5 characters"}
+    }
     const existingNotes = await getStoredNotes();
     noteData.id = new Date().toISOString();
     const updatedNotes = existingNotes.concat(noteData);
